@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:form_demo/User.dart';
+import 'package:form_demo/UserDetails.dart';
 
 void main() {
   runApp(MaterialApp(home: RegistrationForm()));
 }
 
 class RegistrationForm extends StatefulWidget {
+  const RegistrationForm({super.key});
+
   @override
   State<RegistrationForm> createState() => _RegistrationFormState();
 }
@@ -32,23 +36,44 @@ class _RegistrationFormState extends State<RegistrationForm> {
 
   final RegExp _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
   final RegExp _passwordRegex =
-      RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}$');
+      RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$&*~]).{8,}$');
 
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Регистрация прошла успешно')),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final _earliestDate = DateTime(now.year - 100);
-    final _latestDate = DateTime(now.year - 18, now.month, now.day);
+
+    void submit() {
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.save();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Регистрация прошла успешно')),
+        );
+
+        final user = User(
+          email: _emailController.text,
+          password: _passwordController.text,
+          birthDate: _birthDate!,
+          gender: _selectedGender!,
+        );
+
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => UserDetailsPage(user: user)),
+        );
+      }
+    }
+
+    void resetForm() {
+      _formKey.currentState!.reset();
+      _emailController.clear();
+      _passwordController.clear();
+      _confirmPasswordController.clear();
+      setState(() {
+        _birthDate = null;
+        _selectedGender = null;
+        _agreedToPolicy = false;
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text('Регистрация')),
@@ -67,6 +92,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(labelText: 'Email'),
+                onSaved: (val) => _emailController.text = val!,
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Введите email';
                   if (!_emailRegex.hasMatch(value)) return 'Некорректный email';
@@ -83,6 +109,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_repeatPasswordFocus);
                 },
+                onSaved: (val) => _passwordController.text = val!,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   labelText: 'Пароль',
@@ -116,6 +143,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_birthdayFocus);
                 },
+                onSaved: (val) => _confirmPasswordController.text = val!,
                 decoration: InputDecoration(
                   labelText: 'Повторите пароль',
                   suffixIcon: IconButton(
@@ -131,8 +159,9 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Повторите пароль';
-                  if (value != _passwordController.text)
+                  if (value != _passwordController.text) {
                     return 'Пароли не совпадают';
+                  }
                   return null;
                 },
               ),
@@ -242,11 +271,18 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 },
               ),
 
+              SizedBox(height: 8),
+
+              TextButton(
+                onPressed: resetForm,
+                child: Text('Очистить форму'),
+              ),
+
               SizedBox(height: 24),
 
               ElevatedButton(
                 focusNode: _registerButtonFocus,
-                onPressed: _submit,
+                onPressed: submit,
                 child: Text('Зарегистрироваться'),
               ),
             ],
