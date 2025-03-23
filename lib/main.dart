@@ -87,7 +87,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 controller: _emailController,
                 focusNode: _emailFocus,
                 onFieldSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(_passwordFocus);
+                  _passwordFocus.requestFocus();
                 },
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.emailAddress,
@@ -107,7 +107,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 focusNode: _passwordFocus,
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(_repeatPasswordFocus);
+                  _repeatPasswordFocus.requestFocus();
                 },
                 onSaved: (val) => _passwordController.text = val!,
                 obscureText: _obscurePassword,
@@ -141,7 +141,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 obscureText: _obscureRepeatPassword,
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(_birthdayFocus);
+                  _birthdayFocus.requestFocus();
                 },
                 onSaved: (val) => _confirmPasswordController.text = val!,
                 decoration: InputDecoration(
@@ -193,7 +193,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                         initialDate: state.value ?? DateTime.now().subtract(Duration(days: 365 * 18)),
                         onDateSubmitted: (picked) {
                           state.didChange(picked);
-                          FocusScope.of(context).requestFocus(_genderFocus);
+                          _genderFocus.requestFocus();
                         },
                         focusNode: _birthdayFocus,
                         onDateSaved: (picked) {
@@ -222,7 +222,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
               DropdownButtonFormField<String>(
                 focusNode: _genderFocus,
                 onTap: () {
-                  FocusScope.of(context).requestFocus(_registerButtonFocus);
+                  _registerButtonFocus.requestFocus();
                 },
                 decoration: InputDecoration(labelText: 'Пол'),
                 value: _selectedGender,
