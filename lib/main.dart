@@ -38,42 +38,33 @@ class _RegistrationFormState extends State<RegistrationForm> {
   final RegExp _passwordRegex =
       RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$&*~]).{8,}$');
 
+  void submit() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Регистрация прошла успешно')),
+      );
+
+      final user = User(
+        email: _emailController.text,
+        password: _passwordController.text,
+        birthDate: _birthDate!,
+        gender: _selectedGender!,
+      );
+
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => UserDetailsPage(user: user)),
+      );
+    }
+  }
+
+  void resetForm() {
+    _formKey.currentState!.reset();
+  }
 
   @override
   Widget build(BuildContext context) {
-
-    void submit() {
-      if (_formKey.currentState!.validate()) {
-        _formKey.currentState!.save();
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Регистрация прошла успешно')),
-        );
-
-        final user = User(
-          email: _emailController.text,
-          password: _passwordController.text,
-          birthDate: _birthDate!,
-          gender: _selectedGender!,
-        );
-
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => UserDetailsPage(user: user)),
-        );
-      }
-    }
-
-    void resetForm() {
-      _formKey.currentState!.reset();
-      _emailController.clear();
-      _passwordController.clear();
-      _confirmPasswordController.clear();
-      setState(() {
-        _birthDate = null;
-        _selectedGender = null;
-        _agreedToPolicy = false;
-      });
-    }
 
     return Scaffold(
       appBar: AppBar(title: Text('Регистрация')),
